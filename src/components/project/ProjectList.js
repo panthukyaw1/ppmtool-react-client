@@ -2,18 +2,24 @@ import { useSelector,useDispatch } from "react-redux";
 import ProjectItem from "../../components/project/ProjectItem";
 import { selectAllProjects,getProjectError,getProjectStatus,fetchProjects } from "./projectSlice";
 import { useEffect } from "react";
+import { getToken } from "../auth/authSlice";
 
 function ProjectList(){
     const dispatch = useDispatch();
+    const token = useSelector(getToken);
     const projects = useSelector(selectAllProjects);
     const projectStatus = useSelector(getProjectStatus);
     const error = useSelector(getProjectError);
 
     useEffect(()=>{
         if(projectStatus === 'idle'){
-            dispatch(fetchProjects())
+            if(token){
+            dispatch(fetchProjects(token))
+            }else{
+                console.log('Invalid Token')
+            }
         }
-    },[projectStatus,dispatch]);
+    },[projectStatus,dispatch,token]);
 
     let content;
 

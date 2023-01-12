@@ -1,15 +1,14 @@
 import { useDispatch,useSelector } from "react-redux";
 import { useState } from "react";
 import { addNewProject,selectProjectByIdentifier, updateProject } from "./projectSlice";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
+import { getToken } from "../auth/authSlice";
 function AddProjectForm(props){
 
     const {projectId} = useParams();
-    const project = useSelector((state)=>selectProjectByIdentifier(state,String(projectId)))
-
-    console.log(projectId)
-    console.log(project)
-
+    const token = useSelector(getToken);
+    const project = useSelector((state)=>selectProjectByIdentifier(state,String(projectId)));
+    const navigate = useNavigate();
     const [projectName,setProjectName] = useState(project?.projectName);
     const [projectIdentifier,setProjectIdentifier] = useState(project?.projectIdentifier);
     const [description,setDescription] = useState(project?.description);
@@ -42,15 +41,16 @@ function AddProjectForm(props){
                     description,
                     startDate,
                     endDate
-                    }):
+                    },token):
                     addNewProject({
                     projectName,
                     projectIdentifier,
                     description,
                     startDate,
                     endDate
-                    }),
-                );
+                    },token),
+                ).unwrap();
+                navigate('/dashboard')
         } catch (error) {
             console.log(error)
         }finally{
